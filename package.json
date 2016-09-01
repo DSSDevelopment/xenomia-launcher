@@ -1,7 +1,7 @@
 {
-  "name": "electron-quick-start",
+  "name": "Xenomia_Launcher",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "Updater, launcher and chat lobby for Xenomia.",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
@@ -16,13 +16,19 @@
     "start",
     "tutorial"
   ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
+  "author": "Tiny Tuttle Studios",
+  "license": "Proprietary",
   "bugs": {
     "url": "https://github.com/electron/electron-quick-start/issues"
   },
-  "homepage": "https://github.com/electron/electron-quick-start#readme",
+  "homepage": "http://xenomia.com",
   "devDependencies": {
     "electron-prebuilt": "^1.2.0"
+  },
+  "dependencies": {
+    "electron-context-menu": "^0.4.0",
+    "electron-json-storage": "^2.0.0",
+    "node-xmpp-client": "^3.0.2",
+    "node-xmpp-serviceadmin": "^0.2.0"
   }
 }

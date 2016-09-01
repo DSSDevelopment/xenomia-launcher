@@ -2,18 +2,378 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Hello World!</title>
+    <title>Xenomia Launcher</title>
+    <script src="./css/js/jquery.js"></script>
+    <script src="./css/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="./css/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/launcher.css">
   </head>
   <body>
-    <h1>Hello World!</h1>
-    <!-- All of the Node.js APIs are available in this renderer process. -->
-    We are using node <script>document.write(process.versions.node)</script>,
-    Chromium <script>document.write(process.versions.chrome)</script>,
-    and Electron <script>document.write(process.versions.electron)</script>.
+    <div class="modal fade new-game-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+      <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Create Game</h4>
+          </div>
+          <div class="modal-body">
+            <div class="input-group" style="margin-bottom:14px;">
+              <span class="input-group-addon" id="sizing-addon1">Game Name</span>
+              <input type="text" id="new-game-name" class="form-control" placeholder="my cool game" aria-describedby="sizing-addon1">
+            </div>
+
+            <div style="margin-top:8px; margin-bottom:16px;">
+              <div class="dropdown" style="display:inline-block;">
+                <button class="btn btn-default dropdown-toggle" type="button" id="newgame-players-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                  Players
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="playersdropdown-newgame">
+                  <li><a id="new-1" href="#" onclick="setPlayerCount(this.id);">1</a></li>
+                  <li><a id="new-2" href="#" onclick="setPlayerCount(this.id);">2</a></li>
+                  <li><a id="new-3" href="#" onclick="setPlayerCount(this.id);">3</a></li>
+                  <li><a id="new-4" href="#" onclick="setPlayerCount(this.id);">4</a></li>
+                  <li><a id="new-5" href="#" onclick="setPlayerCount(this.id);">5</a></li>
+                  <li><a id="new-6" href="#" onclick="setPlayerCount(this.id);">6</a></li>
+                  <li><a id="new-7" href="#" onclick="setPlayerCount(this.id);">7</a></li>
+                  <li><a id="new-8" href="#" onclick="setPlayerCount(this.id);">8</a></li>
+                </ul>
+              </div>
+              <div id="playerCountDisplay-newgame" class="text-left" style="padding-left:14px; line-height:32px; display:inline-block;">1</div>
+          </div>
+
+            <button class="btn btn-danger inline-block" id="cancel-game-button" data-dismiss="modal">Cancel</button>
+            <button class="btn btn-success inline-block" id="open-game-button">Create</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid toolbar">
+      <div class="row">
+
+        <div class="col-xs-4">
+          <div class="pull-left left-block">
+            <img class="toolbar-logo" src="./images/m_doom.gif"></img>
+          </div>
+          <div class="pull-left left-block" style="margin-top:36px;"><h4 style="display:inline-block;">lpha</h4><small>  0.0.5</small></div>
+        </div>
+
+        <div class="col-xs-6">
+          <!-- Nav tabs -->
+          <ul class="nav nav-tabs" id="main-tabs" role="tablist" style="-webkit-app-region: no-drag; margin-top:30px; border-bottom-width: 0; max-width:320px; padding:0; margin-right:0;">
+            <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab" class="top-tab">Home</a></li>
+            <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" class="top-tab">Profile</a></li>
+            <li role="presentation"><a href="#lobby" aria-controls="lobby" role="tab" data-toggle="tab" class="top-tab">Lobby</a></li>
+            <li role="presentation"><a href="#match" aria-controls="match" role="tab" data-toggle="tab" class="top-tab">Match</a></li>
+          </ul>
+        </div>
+
+        <div class="col-xs-2">
+          <div class="text-right toolbar-buttons">
+            <button class="windows-menu-button" id="btn-minimize"><span class="glyphicon glyphicon-minus windows-menu-glyph"></span></button>
+            <button class="windows-menu-button" id="btn-maximize"><span class="glyphicon glyphicon-unchecked windows-menu-glyph"></span></span></button>
+            <button class="windows-menu-button" id="btn-close"><span class="glyphicon glyphicon-remove windows-menu-glyph"></span></button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="metal-divider"></div>
+
+
+    <div class="tab-background">
+      <div class="container-fluid tab-container">
+
+        <div class="row" style="background-color:#4D5061;">
+          <div class="col-xs-12">
+
+
+          <div class="clearfix"></div>
+        </div>
+      </div>
+
+          <!-- Tab panes -->
+          <div class="tab-content" style="height:100%;">
+            <div role="tabpanel" style="height:100%;" class="tab-pane active" id="home">
+              <div class="container-fluid" style="height:100%;">
+                <div class="row" style="height:100%;">
+                  <div class="col-lg-12" style="height:100%;">
+                    <div class="panel center-block main-panel" style="margin-top:24px; padding-left:24px; padding-right:24px; padding-bottom:12px; padding-top:12px; margin-bottom:32px; height:calc(100% - 64px); max-width:800px;">
+                      <h2 class="text-center">Welcome to the Xenomia Pre-Alpha test!</h2>
+                      <h5 class="text-justify">During this first Alpha test, we will be holding group play sessions from 4PM-8PM CST on Sundays.
+                        The developers will be available during this time to play, so even if you are the only one to login,
+                         we'll still be able to play some great games, break things, and fix them for next week.
+                      </h5>
+                      <div id="login-panel" class="center-block" style="max-width:320px;">
+                        <div class="input-group" style="margin-bottom:14px;">
+                          <span class="input-group-addon" id="sizing-addon1">Lobby Username</span>
+                          <input type="text" id="lobby-username" class="form-control" placeholder="username" aria-describedby="sizing-addon1">
+                        </div>
+                        <div class="input-group" style="margin-bottom:14px;">
+                          <span class="input-group-addon" id="sizing-addon1">Password</span>
+                          <input type="password" id="lobby-password" class="form-control" placeholder="password" aria-describedby="sizing-addon1">
+                        </div>
+                        <button class="btn btn-default btn-success" id="loginbutton" style="display:inline-block;">Login</button>
+                        <p class="text-center" id="login-status" style="display:inline-block; margin-left: 18px;">You are not logged in.</p>
+                      </div>
+
+
+                      <h3 style="margin-left:24px;">Latest News</h3>
+                        <div id="latest-news" class="latest-news-folded">Loading...</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="profile">
+              <div class="container-fluid">
+
+                <div class="row">
+                  <div class="col-lg-12">
+                    <div class="panel center-block main-panel" style="margin-top:24px; padding: 24px; max-width:800px;">
+                        <h3 class="text-center" id="player-name" style="margin-bottom:12px;">player</h3>
+                        <button class="btn btn-small btn-default pull-right" id="btn-profilesave" style="margin-left:12px;">Save</button>
+                        <div class="input-group">
+                          <span class="input-group-addon" id="sizing-addon1">In-game Name</span>
+                          <input type="text" id="player-name-entry" class="form-control" placeholder="Tag" aria-describedby="sizing-addon1">
+                        </div>
+
+                        <div class="dropdown" style="margin-top:24px; display:inline-block;">
+                          <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Preferred Team Color
+                            <span class="caret"></span>
+                          </button>
+                          <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" style="width:320px;">
+                            <li><a href="#" id="team-0" onclick="setPrefTeam(this.id, '#FBF235');"><div class="color-well pull-left" style="background-color:#FBF235;"></div>Mustard Killas</a></li>
+                            <li><a href="#" id="team-1" onclick="setPrefTeam(this.id, '#5A6EE1');"><div class="color-well pull-left" style="background-color:#5A6EE1;"></div>Blue Man Group</a></li>
+                            <li><a href="#" id="team-2" onclick="setPrefTeam(this.id, '#6BBE30');"><div class="color-well pull-left" style="background-color:#6BBE30;"></div>Boogerzerkers</a></li>
+                            <li><a href="#" id="team-3" onclick="setPrefTeam(this.id, '#76428A');"><div class="color-well pull-left" style="background-color:#76428A;"></div>Team Formerly Known as Purple</a></li>
+                            <li><a href="#" id="team-4" onclick="setPrefTeam(this.id, '#DF7126');"><div class="color-well pull-left" style="background-color:#DF7126;"></div>Colored Pencil Monopolists</a></li>
+                            <li><a href="#" id="team-5" onclick="setPrefTeam(this.id, '#D77BBA');"><div class="color-well pull-left" style="background-color:#D77BBA;"></div>Cupcake Dynamos</a></li>
+                            <li><a href="#" id="team-6" onclick="setPrefTeam(this.id, '#5FCDE4');"><div class="color-well pull-left" style="background-color:#5FCDE4;"></div>Louis Armstrong Memorial Team</a></li>
+                            <li><a href="#" id="team-7" onclick="setPrefTeam(this.id, '#D95763');"><div class="color-well pull-left" style="background-color:#D95763;"></div>Ketchup Mongers</a></li>
+                          </ul>
+                        </div>
+                        <div class="color-well" id="pref-team-color" style="position:relative; top:6px; margin-left:12px;"></div><p style="color:#fff; width:220px; display:inline-block;" id="selectedTeam">Mustard Killers</p>
+                        <button class="btn btn-small btn-danger" id="btn-passwordsave" style="float:right; margin-top:24px; display:inline-block;">Change Password</button>
+
+
+
+
+
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="lobby" style="height:100%;">
+
+              <div class="container-fluid" style="height:100%;">
+                <div class="row" style="height:100%;">
+
+                  <div class="col-xs-3 col-lg-2" style="background-color:rgba(77,80,97,0.85); border-right-style:solid; border: 0 0 0 2px; border-right-color:rgba(77,80,97,1.0); height:100%; margin:0; margin-left:-15px;">
+                      <h3 class="text-center">Games</h3>
+                      <div id="open-games" class="list-group" style="height:calc(100% - 186px); overflow-y:auto; margin-bottom:0;">
+                      <!--  <a href="#" class="list-group-item">Leonan</a> -->
+
+                      </div>
+                      <div id="new-game-panel" style="padding:12px;">
+                           <button class="btn btn-success" data-toggle="modal" data-target=".new-game-modal" style="width:100%;">Create Game</button>
+                           <button class="btn btn-info" id="single-player-button" style="margin-top:8px; width:100%;">Single Player</button>
+                      </div>
+                  </div>
+
+                  <div class="col-xs-6 col-lg-8" style="height:100%; margin-left:15px;">
+                    <div class="panel center-block main-panel" style="margin-top:24px; margin-bottom:32px; padding-left:8px; padding-right:8px; padding-bottom:12px; padding-top:8px; width:100%; height:calc(100% - 64px);">
+                      <h5 id="lobby-subject" class="lobby-motd text-center">Message of the Day</h5>
+                      <div class="center-block" id="messages" style="height:calc(100% - 64px); overflow-y:auto; padding:24px 24px 0 24px; margin-left:0px; margin-right:0px; background-color:rgba(17, 17, 17, 0.85); margin-bottom:0;">
+                        <div class="center-block" id="timestamp-container" style="height:32px; background-color:transparent;"><p id="timestamp-display" class="timestamp-item text-center"></p> </div>
+                      </div>
+                      <div class="input-group" >
+                        <span class="input-group-addon" id="sizing-addon1">Say:</span>
+                        <input type="text" id="chat-box" class="form-control" placeholder=" " aria-describedby="sizing-addon1">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-xs-3 col-lg-2" style="background-color:rgba(77,80,97,0.85); border-left-style:solid; border: 0 0 0 2px; border-left-color:rgba(77,80,97,1.0); overflow-y: auto; position:absolute; top:93px; right:0; bottom:0;">
+                      <h3 class="text-center">Online Players</h3>
+                      <div id="online-players" class="list-group" style="height:calc(100% - 91px);">
+                      <!--  <a href="#" class="list-group-item">Leonan</a> -->
+
+                      </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="match" style="height:100%;">
+              <div class="container-fluid" style="height:100%;">
+                <div class="row" style="height:100%">
+                  <div class="col-xs-12" style="height:100%">
+                    <div class="panel main-panel center-block" style="margin-top:24px; padding-left:24px; padding-right:24px; padding-bottom:12px; padding-top:12px; height:calc(100% - 64px); max-width:1280px;">
+
+                          <div class="container-fluid">
+                            <div class="row" style="height:100%;">
+                              <div class="col-xs-8" style="height:100%;">
+                                <h3 class="text-center">Join or Create a game in the Lobby</h3>
+                                <div id="match-players" style="height:calc(100% - 164px);">
+                                <!--  <a href="#" class="list-group-item">Leonan</a> -->
+                                <div id="local-player" class="localPlayer-well" style="width:100%; height:56px;">
+
+                                  <p class="player-name" style="display:inline-block; margin-right:14px; margin-left:24px;">Leonan</p>
+
+                                  <div class="dropdown" style="margin-top:12px; display:inline-block;">
+                                    <button class="btn btn-default dropdown-toggle" type="button" id="matchTeamDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                      Team
+                                      <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" style="width:320px;">
+                                      <li><a href="#" id="match-0" onclick="setPrefTeam(this.id, '#FBF235');"><div class="color-well pull-left" style="background-color:#FBF235;"></div>Mustard Killas</a></li>
+                                      <li><a href="#" id="match-1" onclick="setPrefTeam(this.id, '#5A6EE1');"><div class="color-well pull-left" style="background-color:#5A6EE1;"></div>Blue Man Group</a></li>
+                                      <li><a href="#" id="match-2" onclick="setPrefTeam(this.id, '#6BBE30');"><div class="color-well pull-left" style="background-color:#6BBE30;"></div>Boogerzerkers</a></li>
+                                      <li><a href="#" id="match-3" onclick="setPrefTeam(this.id, '#76428A');"><div class="color-well pull-left" style="background-color:#76428A;"></div>Team Formerly Known as Purple</a></li>
+                                      <li><a href="#" id="match-4" onclick="setPrefTeam(this.id, '#DF7126');"><div class="color-well pull-left" style="background-color:#DF7126;"></div>Colored Pencil Monopolists</a></li>
+                                      <li><a href="#" id="match-5" onclick="setPrefTeam(this.id, '#D77BBA');"><div class="color-well pull-left" style="background-color:#D77BBA;"></div>Cupcake Dynamos</a></li>
+                                      <li><a href="#" id="match-6" onclick="setPrefTeam(this.id, '#5FCDE4');"><div class="color-well pull-left" style="background-color:#5FCDE4;"></div>Louis Armstrong Memorial Team</a></li>
+                                      <li><a href="#" id="match-7" onclick="setPrefTeam(this.id, '#D95763');"><div class="color-well pull-left" style="background-color:#D95763;"></div>Ketchup Mongers</a></li>
+                                    </ul>
+                                  </div>
+                                  <div class="color-well" id="match-team-color" style="position:relative; top:6px; margin-left:12px;"></div>
+                                  <input class="match-input" type="checkbox" id="ready-checkbox"><span style="margin-left:18px;">Ready</span></input>
+
+                                  </div>
+
+                                  <div id="remote-player" class="remotePlayer-well" style="width:100%; height:56px;">
+
+                                    <p class="player-name" style="display:inline-block; margin-right:14px; margin-left:24px;">Darkcammo</p>
+                                    <div class="color-well" id="match-team-color" style="position:relative; top:6px; margin-left:12px;"></div>
+                                    <p style="display:inline-block; margin-left:18px;">Ready</p>
+
+                                    </div>
+
+                                </div>
+
+                                <!-- <p class="text-center" style="font-size:1.8em; margin-top:44px;">Your Internet IP Address: <span id="client-ip" style="color:#22cc22;">(unknown)</span>
+                                </p>
+                                <div id="host-status" class="center-block alert alert-info">unknown</div>
+                                <p class="text-center" style="margin-top:24px;">Your internal (LAN) IP: <span id="lan-ip" style="color:#22cc22;">(unknown)</span>
+                                </p>
+                                <p class="text-center" style="margin-bottom:44px;">Only use this IP address for players on the same network as this computer.</p>
+                                <div class="btn btn-lg btn-success" id="btn-startmatch">Launch as Host</div>
+                                <div class="btn btn-lg btn-info" id="btn-refreshIP">Refresh</div>
+                                -->
+                              </div>
+
+
+                            <div class="col-xs-4">
+                              <div id="match-settings" style="margin-left:24px; margin-right:-24px; width:280px; float:right; margin-top:12px;">
+                                <h3 class="text-center">Settings</h3>
+
+
+                                <div style="margin-top:8px; margin-bottom:16px;">
+                                  <div class="dropdown" style="display:inline-block;">
+                                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                      Players
+                                      <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="playersdropdown">
+                                      <li><a id="1" href="#" onclick="setPlayerCount(this.id);">1</a></li>
+                                      <li><a id="2" href="#" onclick="setPlayerCount(this.id);">2</a></li>
+                                      <li><a id="3" href="#" onclick="setPlayerCount(this.id);">3</a></li>
+                                      <li><a id="4" href="#" onclick="setPlayerCount(this.id);">4</a></li>
+                                      <li><a id="5" href="#" onclick="setPlayerCount(this.id);">5</a></li>
+                                      <li><a id="6" href="#" onclick="setPlayerCount(this.id);">6</a></li>
+                                      <li><a id="7" href="#" onclick="setPlayerCount(this.id);">7</a></li>
+                                      <li><a id="8" href="#" onclick="setPlayerCount(this.id);">8</a></li>
+                                    </ul>
+                                  </div>
+                                  <div id="playerCountDisplay" class="text-left" style="padding-left:14px; line-height:32px; display:inline-block;">1</div>
+                              </div>
+
+                                <div style=" margin-bottom:16px;">
+                                  <div class="dropdown" style="display:inline-block;">
+                                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                      Map
+                                      <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="mapdropdown">
+                                      <li><a href="#">Unjust Deserts (1v1)</a></li>
+                                    </ul>
+                                  </div>
+                                  <div class="text-left" style="padding-left:14px; line-height:32px; display:inline-block;">Unjust Deserts</div>
+                              </div>
+
+
+                                  <div style="margin-top:8px; margin-bottom:16px;">
+                                    <div class="dropdown" style="display:inline-block;">
+                                      <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        Time Limit
+                                        <span class="caret"></span>
+                                      </button>
+                                      <ul class="dropdown-menu" aria-labelledby="timedropdown">
+                                        <li><a id="10" href="#" onclick="setTimelimit(this.id);">10 Minutes</a></li>
+                                        <li><a id="20" href="#" onclick="setTimelimit(this.id);">20 Minutes</a></li>
+                                        <li><a id="30" href="#" onclick="setTimelimit(this.id);">30 Minutes</a></li>
+                                        <li><a id="60" href="#" onclick="setTimelimit(this.id);">1 Hour</a></li>
+                                        <li><a id="-1" href="#" onclick="setTimelimit(this.id);">None</a></li>
+                                      </ul>
+                                    </div>
+                                    <div id="timelimitDisplay" class="text-left" style="padding-left:14px; line-height:32px; display:inline-block;">None</div>
+                                </div>
+
+                                <div style="height:18px; clear:both;"></div>
+                                  <input class="horizontal-input" type="checkbox" id="allow-team-switching"><span style="margin-left:6px;">Allow team switching</span></input>
+                                  <div style="height:12px; clear:both;"></div>
+                                  <button class="btn btn-lg btn-danger" id="match-start-button" style="width:100%; margin-top:24px;">LAUNCH</button>
+
+
+                              </div>
+                            </div>
+
+                          </div>
+
+
+
+                          </div>
+
+
+                          </div>
+                        </div>
+
+                    </div>
+
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+
+
+      </div>
+
+      </div>
+    </div>
+
   </body>
 
   <script>
     // You can also require other files to run in this process
-    require('./renderer.js')
+    require('./renderer.js');
   </script>
+  <script src="./start.js"></script>
+  <script src="./chat.js"></script>
+  <script src="./match.js"></script>
+  <script>
+    setIP();
+    initChat();
+    initMatch();
+</script>
 </html>

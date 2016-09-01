@@ -1,0 +1,338 @@
+@font-face {
+  font-family: 'Amiko-Semibold';
+  src: url('../fonts/Amiko-SemiBold.ttf');
+}
+
+@font-face {
+  font-family: 'Dosis-Regular';
+  src: url('../fonts/Dosis-Medium.ttf');
+}
+
+@font-face {
+  font-family: 'TitilliumWeb-Regular';
+  src: url('../fonts/TitilliumWeb-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'TitilliumWeb-Bold';
+  src: url('../fonts/TitilliumWeb-Bold.ttf');
+}
+
+@font-face {
+  font-family: 'TitilliumWeb-Black';
+  src: url('../fonts/TitilliumWeb-Black.ttf');
+}
+
+* {
+  -webkit-border-radius: 0 !important;
+     -moz-border-radius: 0 !important;
+          border-radius: 0 !important;
+  -webkit-user-select: none;
+  cursor:default;
+}
+
+body, html {
+  overflow: hidden;
+  color:#DFDFDF;
+  height:100%;
+  font-family: "Dosis-Regular";
+  font-size: 16px;
+  background-image: url("../images/header.jpg");
+  background-size: cover;
+  border: solid rgba(77,80,97,1.0);
+  border-width: 1px;
+
+}
+
+body {
+  padding-right: 0 !important;
+}
+
+
+
+.modal-open {
+  padding-right:0 !important;
+}
+
+.modal-dialog {
+  background-color: rgba(77,80,97,1.0);
+}
+
+.modal-content {
+  background-color: rgba(77,80,97,1.0);
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: "Amiko-Semibold";
+}
+
+input {
+  cursor:text;
+}
+
+a {
+  cursor:pointer;
+}
+
+li a {
+  display:inline-block;
+  font-family:"Amiko-Semibold";
+  font-size:14px;
+}
+
+.launcher-motd {
+
+}
+
+
+.list-group-item {
+  background-color:transparent;
+  padding-top:4px;
+  padding-bottom:4px;
+  height:24px;
+  border: none;
+  color: #639BFF;
+  font-weight:bold;
+  -webkit-user-select: text;
+  cursor:text;
+}
+
+
+.moderator-item {
+  color: #DF7126;
+  font-face: "TitilliumWeb-Regular";
+  -webkit-user-select: text;
+  cursor:text;
+}
+
+.timestamp-item {
+  color:#4D5061;
+  font-size:14px;
+  font-family: 'TitilliumWeb-Bold';
+  margin:0;
+}
+
+.well {
+  background-color: #C5E1A5;
+  border: 1px solid #558B2F;
+  color:#4D5061;
+  box-shadow: -2px 2px 3px #333333;
+  font-family: "TitilliumWeb-Regular";
+}
+
+.localPlayer-well {
+  background-color: #C5E1A5;
+  border: 1px solid #558B2F;
+  color:#4D5061;
+  box-shadow: -2px 2px 3px #333333;
+}
+.player-name {
+  color:#263238;
+  font-family: "Amiko-Semibold";
+  width:calc(100% - 260px);
+}
+
+.remotePlayer-well {
+  margin-top:18px;
+  color:#263238;
+  padding-top:13px;
+  background-color: #78909C;
+  border: 1px solid #37474F;
+  box-shadow: -2px 2px 3px #333333;
+}
+
+.toolbar-logo {
+  width: 188px;
+  height: 55px;
+  margin-top:8px;
+}
+
+.toolbar {
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+  background-color:transparent;
+  color:#FFF;
+  height: 72px;
+  background-color: rgba(77,80,97,0.85);
+  /* border-bottom-width:4px;
+  border-bottom-color: #A92733;
+  border-bottom-style: solid;
+  */
+}
+
+.main-panel
+{
+  background-color: rgba(77,80,97,0.95);
+  border: 2px solid rgba(77,80,97,1.0);
+}
+
+.windows-menu-button
+{
+  width:44px;
+  height:36px;
+  border:none;
+  background-color:transparent;
+  outline: none;
+}
+
+.windows-menu-button:hover
+{
+  background-color:#32393E;
+}
+
+.windows-menu-glyph
+{
+  pointer-events: none;
+  font-size: 12px;
+}
+
+.latest-news-folded
+{
+  overflow-y: auto;
+  height: calc(100% - 320px);
+  padding-left:24px;
+  padding-right:24px;
+}
+
+.latest-news-expanded
+{
+  overflow-y: auto;
+  height: calc(100% - 170px);
+  padding-left:24px;
+  padding-right:24px;
+}
+
+.color-well
+{
+  height:20px;
+  width:36px;
+  border: 2px solid #222;
+  background-color:#000;
+  display: inline-block;
+  margin-right:12px;
+}
+
+.chat-name
+{
+  font-family: "TitilliumWeb-Bold";
+  color:#639BFF;
+  -webkit-user-select: text;
+  cursor:text;
+  	text-shadow: -2px 1px #000000;
+}
+
+.moderator-chat-name
+{
+  font-family: "TitilliumWeb-Bold";
+  color: #DF7126;
+  -webkit-user-select: text;
+  cursor:text;
+  	text-shadow: -2px 1px #000000;
+}
+.moderator-chat-text
+{
+  font-family: "TitilliumWeb-Regular";
+  color: #DF7126;
+  -webkit-user-select: text;
+  cursor:text;
+  	text-shadow: -2px 1px #000000;
+}
+
+.chat-text
+{
+  font-family: "TitilliumWeb-Regular";
+  color:#FFF;
+  -webkit-user-select: text;
+  cursor:text;
+  	text-shadow: -2px 1px #000000;
+}
+
+
+.vertical-center
+{
+ display: table-cell;
+ float: none;
+ vertical-align: middle;
+}
+
+.toolbar-buttons
+{
+ margin-top:0;
+ margin-right: -16px;
+}
+
+.top-tab
+{
+  color:#fff;
+}
+
+button {
+    -webkit-app-region: no-drag;
+}
+
+.btn-success {
+  background-color:#99E550;
+}
+
+.btn-info {
+  background-color:#5FCDE4;
+}
+
+.btn-danger {
+  background-color: #D95763;
+}
+
+.tab-container {
+  b//ackground-color: rgba(0, 0, 0, 0.5);
+  height: -webkit-calc(100vh - 72px);
+  height: -moz-calc(100vh - 72px);
+  height: calc(100vh - 72px);
+  background: linear-gradient(to top, rgba(38,50,56,0.0), rgba(38,50,56,0.85)); /* Standard syntax (must be last) */
+}
+
+.tab-background {
+
+}
+
+.nav-tabs li {
+  float: left;
+}
+
+label {
+    display: block;
+    padding-left: 15px;
+    text-indent: -15px;
+}
+
+.horizontal-input {
+    width: 13px;
+    height: 13px;
+    padding: 0;
+    margin:0;
+    vertical-align: bottom;
+    position: relative;
+    top: -3px;
+    *overflow: hidden;
+}
+
+.match-input {
+  width: 13px;
+  height: 13px;
+  padding: 0;
+  margin:0;
+  vertical-align: middle;
+  position: relative;
+  top: -3px;
+  *overflow: hidden;
+}
+
+.metal-divider {
+    height: 19px;
+    width:100%;
+    background: url("../images/htrim.gif") repeat-x 50% 50%;
+    image-rendering: -moz-crisp-edges;         /* Firefox */
+    image-rendering:   -o-crisp-edges;         /* Opera */
+    image-rendering: -webkit-optimize-contrast;/* Webkit (non-standard naming) */
+    image-rendering: crisp-edges;
+    -ms-interpolation-mode: nearest-neighbor;  /* IE (non-standard property) */
+}
