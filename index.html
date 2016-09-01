@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="./css/launcher.css">
   </head>
   <body>
-    <div class="modal fade new-game-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal fade new-game-modal" id="new-game-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
       <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -221,12 +221,12 @@
                           <div class="container-fluid">
                             <div class="row" style="height:100%;">
                               <div class="col-xs-8" style="height:100%;">
-                                <h3 class="text-center">Join or Create a game in the Lobby</h3>
-                                <div id="match-players" style="height:calc(100% - 164px);">
-                                <!--  <a href="#" class="list-group-item">Leonan</a> -->
+                                <h3 class="text-center" id="game-name-label">Join or Create a game in the Lobby</h3>
+
+
                                 <div id="local-player" class="localPlayer-well" style="width:100%; height:56px;">
 
-                                  <p class="player-name" style="display:inline-block; margin-right:14px; margin-left:24px;">Leonan</p>
+                                  <p class="player-name" id="local-player-name" style="display:inline-block; margin-right:14px; margin-left:24px;"></p>
 
                                   <div class="dropdown" style="margin-top:12px; display:inline-block;">
                                     <button class="btn btn-default dropdown-toggle" type="button" id="matchTeamDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -249,16 +249,12 @@
 
                                   </div>
 
-                                  <div id="remote-player" class="remotePlayer-well" style="width:100%; height:56px;">
+                                <div id="match-players" style="height:calc(100% - 164px);">
+                                <!--  <a href="#" class="list-group-item">Leonan</a> -->
 
-                                    <p class="player-name" style="display:inline-block; margin-right:14px; margin-left:24px;">Darkcammo</p>
-                                    <div class="color-well" id="match-team-color" style="position:relative; top:6px; margin-left:12px;"></div>
-                                    <p style="display:inline-block; margin-left:18px;">Ready</p>
 
-                                    </div>
 
                                 </div>
-
                                 <!-- <p class="text-center" style="font-size:1.8em; margin-top:44px;">Your Internet IP Address: <span id="client-ip" style="color:#22cc22;">(unknown)</span>
                                 </p>
                                 <div id="host-status" class="center-block alert alert-info">unknown</div>
@@ -272,7 +268,7 @@
 
 
                             <div class="col-xs-4">
-                              <div id="match-settings" style="margin-left:24px; margin-right:-24px; width:280px; float:right; margin-top:12px;">
+                              <div id="match-settings" style="margin-left:24px; margin-right:-24px; width:280px; margin-top:12px;">
                                 <h3 class="text-center">Settings</h3>
 
 
@@ -334,6 +330,9 @@
 
 
                               </div>
+
+                              <button id="leave-match-button" class="btn btn-danger" style="margin-left:24px; margin-right:-24px; width:280px; margin-top:24px;">Leave Match</button>
+
                             </div>
 
                           </div>
@@ -374,6 +373,6 @@
   <script>
     setIP();
     initChat();
-    initMatch();
+    initMatchmaker();
 </script>
 </html>

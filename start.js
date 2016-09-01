@@ -44,6 +44,7 @@ var server = dgram.createSocket({type:'udp4', reuseAddr: true });
       const window = remote.getCurrentWindow();
       window.minimize();
     });
+    $('#match-settings').css('visibility','hidden');
   };
 
   function resolveCargs() {
@@ -120,7 +121,7 @@ var server = dgram.createSocket({type:'udp4', reuseAddr: true });
 
 
 
-    document.getElementById("btn-startmatch").addEventListener("click", function (e) {
+    /*document.getElementById("btn-startmatch").addEventListener("click", function (e) {
         cargs.length = 0;
         resolveCargs();
         cargs.push('-host', numPlayers);
@@ -151,8 +152,9 @@ var server = dgram.createSocket({type:'udp4', reuseAddr: true });
         }
 
     });
+    */
 
-    document.getElementById("btn-joinmatch").addEventListener("click", function (e) {
+    /*document.getElementById("btn-joinmatch").addEventListener("click", function (e) {
       hostIP = document.getElementById("hostIP").value;
       if (hostIP == 0 || hostIP == "")
       {
@@ -182,10 +184,11 @@ var server = dgram.createSocket({type:'udp4', reuseAddr: true });
         }
       }
     });
+    */
 
-    document.getElementById("btn-refreshIP").addEventListener("click", function (e) {
+    /*document.getElementById("btn-refreshIP").addEventListener("click", function (e) {
       setIP();
-    });
+    });*/
 
     document.getElementById("btn-passwordsave").addEventListener("click", function (e) {
       changePassword();
@@ -220,8 +223,8 @@ function setTimelimit(limit) {
 function setTeam(newTeam, newColor) {
   splitTeam = newTeam.split("-");
   team = splitTeam[splitTeam.length-1];
-  var span = document.getElementById("gameSelectedTeam");
-  span.textContent = teams[team];
+  //var span = document.getElementById("gameSelectedTeam");
+  //span.textContent = teams[team];
   settings.set('teamcolor', team);
   $("#game-team-color").css('background', newColor);
 }
@@ -233,19 +236,26 @@ function setPrefTeam(newTeam, newColor) {
   span.textContent = teams[team];
   settings.set('teamcolor', team);
   $("#pref-team-color").css('background', newColor);
+  $("#match-team-color").css('background', newColor);
+  if (typeof matchID != 'undefined')
+  {
+    updateTeamColor(team);
+  }
 }
 
 function setPlayerCount(players) {
-  numPlayers = players;
+  splitPlayers = players.split("-");
+  numPlayers = splitPlayers[splitPlayers.length -1];
   var span = document.getElementById("playerCountDisplay");
   span.textContent = document.getElementById(players).textContent;
+  document.getElementById("playerCountDisplay-newgame").textContent = numPlayers;
 }
 
 function setIP() {
   //document.write("My public IP address is: ", json.ip);
   $.get('http://api.ipify.org', function(response){
-    var ipDiv = document.getElementById("client-ip");
-    ipDiv.textContent = response;
+    //var ipDiv = document.getElementById("client-ip");
+    //ipDiv.textContent = response;
     ip = response;
     getHostStatus();
   });
@@ -270,7 +280,7 @@ function setIP() {
         if (lanIP == 0)
         {
           lanIP = iface.address;
-          document.getElementById("lan-ip").textContent = lanIP;
+          //document.getElementById("lan-ip").textContent = lanIP;
         }
       } else {
         // this interface has only one ipv4 adress
@@ -278,7 +288,7 @@ function setIP() {
         if (lanIP == 0)
         {
           lanIP = iface.address;
-          document.getElementById("lan-ip").textContent = lanIP;
+          //document.getElementById("lan-ip").textContent = lanIP;
         }
       }
       ++alias;

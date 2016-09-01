@@ -16,6 +16,7 @@ var match = require('./match.js');
 function initChat() {
   remote.getCurrentWindow().on('close', () => {
   // window was closed...
+  console.log("leaving chat.");
     leaveChat();
   })
 
@@ -65,6 +66,7 @@ function chatLogin() {
         $("#latest-news").attr("class", "latest-news-expanded");
         setTimeout(chatReady, 3000);
         registerPlayer(gamertag, team, ip, lanIP);
+        refreshAllGames();
 
         connection.send(new xmpp.Stanza('presence', { to: room +'/' + login }).
           c('x', { xmlns: 'http://jabber.org/protocol/muc' })
