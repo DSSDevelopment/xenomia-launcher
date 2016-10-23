@@ -254,7 +254,16 @@ function getHostStatus() {
       var address = server.address();
       console.log('UDP Server listening on ' + address.address + ":" + address.port);
       var message = new Buffer('testing');
-      server.send(message, 0, message.length, 8000, 'xenomia.com');
+      var max = 0
+      function pingMatchmaker() {
+        server.send(message, 0, message.length, 8000, 'xenomia.com');
+        max++
+        if (max < 10) {
+          setTimeout(pingMatchmaker, 250)
+        }
+      }
+
+      pingMatchmaker()
       server.send(message, 0, message.length, 8000, 'personalab.net');
   });
 
