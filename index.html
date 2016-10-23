@@ -54,7 +54,7 @@
           <div class="pull-left left-block">
             <img class="toolbar-logo" src="./images/m_doom.gif"></img>
           </div>
-          <div class="pull-left left-block" style="margin-top:36px;"><h4 style="display:inline-block;">lpha</h4><small>  0.0.5</small></div>
+          <div class="pull-left left-block" style="margin-top:36px;"><h4 style="display:inline-block;">lpha</h4><small>  0.0.12</small></div>
         </div>
 
         <div class="col-xs-6">
@@ -99,9 +99,9 @@
                   <div class="col-lg-12" style="height:100%;">
                     <div class="panel center-block main-panel" style="margin-top:24px; padding-left:24px; padding-right:24px; padding-bottom:12px; padding-top:12px; margin-bottom:32px; height:calc(100% - 64px); max-width:800px;">
                       <h2 class="text-center">Welcome to the Xenomia Pre-Alpha test!</h2>
-                      <h5 class="text-justify">During this first Alpha test, we will be holding group play sessions from 4PM-8PM CST on Sundays.
-                        The developers will be available during this time to play, so even if you are the only one to login,
-                         we'll still be able to play some great games, break things, and fix them for next week.
+                      <h5 class="text-justify">Our launcher is still in heavy development, and there will be bugs! Please
+                         feel free to report any bugs or rage at forums.xenomia.com. If you are having trouble
+                          joining or hosting games, you may need to forward port 5029 to your computer.
                       </h5>
                       <div id="login-panel" class="center-block" style="max-width:320px;">
                         <div class="input-group" style="margin-bottom:14px;">
@@ -112,8 +112,10 @@
                           <span class="input-group-addon" id="sizing-addon1">Password</span>
                           <input type="password" id="lobby-password" class="form-control" placeholder="password" aria-describedby="sizing-addon1">
                         </div>
-                        <button class="btn btn-default btn-success" id="loginbutton" style="display:inline-block;">Login</button>
-                        <p class="text-center" id="login-status" style="display:inline-block; margin-left: 18px;">You are not logged in.</p>
+                        <button class="btn btn-default btn-success" id="loginbutton" style="display:inline-block; margin-right:8px;">Login</button>
+                        <button class="btn btn-default btn-info" id="playofflinebutton" style="display:inline-block; margin-right:18px;">Play Offline</button>
+                        <p style="display:inline-block;" id="login-status">You are not logged in.</p>
+                        <!-- <input class="match-input" type="checkbox" id="remember-checkbox" style="display:inline-block;"><span style="margin-left:8px;" id="remember-indicator">Remember Login</span></input> -->
                       </div>
 
 
@@ -204,7 +206,6 @@
                       <h3 class="text-center">Online Players</h3>
                       <div id="online-players" class="list-group" style="height:calc(100% - 91px);">
                       <!--  <a href="#" class="list-group-item">Leonan</a> -->
-
                       </div>
                   </div>
 
@@ -218,16 +219,11 @@
                   <div class="col-xs-12" style="height:100%">
                     <div class="panel main-panel center-block" style="margin-top:24px; padding-left:24px; padding-right:24px; padding-bottom:12px; padding-top:12px; height:calc(100% - 64px); max-width:1280px;">
 
-                          <div class="container-fluid">
                             <div class="row" style="height:100%;">
                               <div class="col-xs-8" style="height:100%;">
                                 <h3 class="text-center" id="game-name-label">Join or Create a game in the Lobby</h3>
-
-
                                 <div id="local-player" class="localPlayer-well" style="width:100%; height:56px;">
-
                                   <p class="player-name" id="local-player-name" style="display:inline-block; margin-right:14px; margin-left:24px;"></p>
-
                                   <div class="dropdown" style="margin-top:12px; display:inline-block;">
                                     <button class="btn btn-default dropdown-toggle" type="button" id="matchTeamDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                       Team
@@ -245,30 +241,20 @@
                                     </ul>
                                   </div>
                                   <div class="color-well" id="match-team-color" style="position:relative; top:6px; margin-left:12px;"></div>
-                                  <input class="match-input" type="checkbox" id="ready-checkbox"><span style="margin-left:18px;">Ready</span></input>
+                                  <input class="match-input" type="checkbox" id="ready-checkbox"><span style="margin-left:18px;" id="ready-indicator">Ready</span></input>
 
                                   </div>
 
                                 <div id="match-players" style="height:calc(100% - 164px);">
                                 <!--  <a href="#" class="list-group-item">Leonan</a> -->
-
-
-
                                 </div>
-                                <!-- <p class="text-center" style="font-size:1.8em; margin-top:44px;">Your Internet IP Address: <span id="client-ip" style="color:#22cc22;">(unknown)</span>
-                                </p>
-                                <div id="host-status" class="center-block alert alert-info">unknown</div>
-                                <p class="text-center" style="margin-top:24px;">Your internal (LAN) IP: <span id="lan-ip" style="color:#22cc22;">(unknown)</span>
-                                </p>
-                                <p class="text-center" style="margin-bottom:44px;">Only use this IP address for players on the same network as this computer.</p>
-                                <div class="btn btn-lg btn-success" id="btn-startmatch">Launch as Host</div>
-                                <div class="btn btn-lg btn-info" id="btn-refreshIP">Refresh</div>
-                                -->
                               </div>
 
 
-                            <div class="col-xs-4">
-                              <div id="match-settings" style="margin-left:24px; margin-right:-24px; width:280px; margin-top:12px;">
+
+
+                            <div class="col-xs-4" style="height:100%">
+                              <div id="match-settings" class="center-block" style="width:260px; margin-top:12px;">
                                 <h3 class="text-center">Settings</h3>
 
 
@@ -299,10 +285,11 @@
                                       <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="mapdropdown">
-                                      <li><a href="#">Unjust Deserts (1v1)</a></li>
+                                      <li><a id="map:0" href="#" onclick="setMap(this.id)">Unjust Deserts (1v1)</a></li>
+                                      <li><a id="map:1" href="#" onclick="setMap(this.id)">The Dome (1v1)</a></li>
                                     </ul>
                                   </div>
-                                  <div class="text-left" style="padding-left:14px; line-height:32px; display:inline-block;">Unjust Deserts</div>
+                                  <div class="text-left" id="map-display-name" style="padding-left:14px; line-height:32px; display:inline-block;">Unjust Deserts</div>
                               </div>
 
 
@@ -326,20 +313,29 @@
                                 <div style="height:18px; clear:both;"></div>
                                   <input class="horizontal-input" type="checkbox" id="allow-team-switching"><span style="margin-left:6px;">Allow team switching</span></input>
                                   <div style="height:12px; clear:both;"></div>
-                                  <button class="btn btn-lg btn-danger" id="match-start-button" style="width:100%; margin-top:24px;">LAUNCH</button>
+                                  <button class="btn btn-lg btn-warning" id="match-start-button" style="width:100%; margin-top:24px;">WAITING</button>
 
 
                               </div>
 
-                              <button id="leave-match-button" class="btn btn-danger" style="margin-left:24px; margin-right:-24px; width:280px; margin-top:24px;">Leave Match</button>
+                              <button id="leave-match-button" class="btn btn-danger center-block" style="width:260px; margin-top:12px; margin-bottom:16px;">Leave Match</button>
 
+                              <div class="center-block" id="game-chat-container" style="margin:0; padding:0; width:100%; height:calc(100% - 390px);">
+                                <div class="center-block" id="game-messages" style="height:calc(100% - 44px); overflow-y:auto; padding:4px 8px 0 8px; margin:0; background-color:rgba(17, 17, 17, 0.85);">
+                                  <div class="center-block" id="game-timestamp-container" style="height:0px; background-color:transparent;"><p id="game-timestamp-display" class="timestamp-item text-center"></p> </div>
+                                </div>
+                                <div class="input-group" >
+                                  <span class="input-group-addon" id="sizing-addon1">Say:</span>
+                                  <input type="text" id="game-chat-box" class="form-control" placeholder=" " aria-describedby="sizing-addon1">
+                                </div>
+                              </div>
                             </div>
 
                           </div>
 
 
 
-                          </div>
+
 
 
                           </div>
@@ -369,10 +365,12 @@
   </script>
   <script src="./start.js"></script>
   <script src="./chat.js"></script>
+  <script src="./api.js"></script>
   <script src="./match.js"></script>
+  <script src="./gameops.js"></script>
+  <script src="./launchseq.js"></script>
   <script>
     setIP();
     initChat();
-    initMatchmaker();
 </script>
 </html>

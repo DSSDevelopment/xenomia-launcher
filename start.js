@@ -3,31 +3,55 @@ var timelimit = -1;
 var team = 0;
 var teamChanges = 0;
 var hostIP = 0;
+var hostPort = 0;
 var numPlayers = 1;
 var ip = 0;
 var lanIP = 0;
 var hostStatus = "(unknown)";
+var UDPActive = false;
 var open = require("open");
 const settings = require('electron-settings');
 const teams = ['Mustard Killas', 'Blue Man Group', 'Boogerzerkers', 'Team Formerly Known as Purple',
 'Colored Pencil Monopolists', 'Cupcake Dynamos', 'Louis Armstrong Memorial Team', 'Ketchup Mongers'];
 const teamColors = ['#FBF235', '#5A6EE1', '#6BBE30', '#76428A', '#DF7126', '#D77BBA', '#5FCDE4', '#D95763'];
-const launcherVersion = 5;
+const maps = [{ name: 'Unjust Deserts',
+                filename: 'XENMAP01'},
+              {
+                name: 'The Dome',
+                filename: 'XENMAP03'}
+              ];
+const launcherVersion = 17;
 var dgram = require('dgram');
 var server = dgram.createSocket({type:'udp4', reuseAddr: true });
+var natman = require('natman-api');
+const defCargs = ['-deathmatch', '+teamplay', '1', '+set', 'sv_samelevel', '1', '-extratic'];
+var cargs = [];
+
+// LAN autodiscovery
+var polo = require('polo');
+var http = require('http');
+var zeroconf = polo({multicast: false, monitor: true, heartbeat: 2*60*1000});
+const DISCOVERY_PORT = 5030;
 
 (function () {
 
   const remote = require('electron').remote;
   const storage = require('electron-json-storage');
 
-  const defCargs = ['+map', 'xenmap01', '-deathmatch', '+teamplay', '1', '-netmode', '1', '+set', 'sv_samelevel', '1', '-extratic'];
-  var cargs = [];
+
 
   function init() {
     document.getElementById("btn-close").addEventListener("click", function (e) {
-      const window = remote.getCurrentWindow();
-      window.close();
+      if (typeof leaveChat === "function") {
+        console.log("Leaving chat and match.")
+        leaveChat(function() {
+          const window = remote.getCurrentWindow();
+          window.close();
+        })
+      } else {
+        const window = remote.getCurrentWindow();
+        window.close();
+      }
     });
     document.getElementById("btn-maximize").addEventListener("click", function (e) {
       const window = remote.getCurrentWindow();
@@ -59,8 +83,7 @@ var server = dgram.createSocket({type:'udp4', reuseAddr: true });
     } else {
       cargs.push("+set", "sv_noteamswitch", "1");
     }
-    cargs.push("+team", team);
-    cargs.push("+set", "name", gamertag);
+    cargs.push("+team", team, "+set", "name", gamertag);
   };
 
   const path = require('path');
@@ -85,7 +108,7 @@ var server = dgram.createSocket({type:'udp4', reuseAddr: true });
         setTeam("team-" + team, teamColors[team]);
     });
 
-    $.get("http://xenomia.com/news.php", function(data, status){
+    $.get("https://xenomia.com/news.php", function(data, status){
          //alert("Data: " + data + "\nStatus: " + status);
          if (data)
          {
@@ -93,7 +116,7 @@ var server = dgram.createSocket({type:'udp4', reuseAddr: true });
          }
      });
 
-     $.get("http://xenomia.com/version.php", function(data, status){
+     $.get("https://xenomia.com/version.php", function(data, status){
           //alert("Data: " + data + "\nStatus: " + status);
           if (data)
           {
@@ -103,14 +126,11 @@ var server = dgram.createSocket({type:'udp4', reuseAddr: true });
             {
               if (confirm("There is a newer version of Xenomia available. Go to xenomia.com now?") )
               {
-                open("http://xenomia.com");
+                open("https://xenomia.com");
               }
             }
           }
       });
-
-
-
 
     $('#player-name-entry').keypress(function(event){
         var keycode = (event.keyCode ? event.keyCode : event.which);
@@ -118,78 +138,6 @@ var server = dgram.createSocket({type:'udp4', reuseAddr: true });
            saveProfile();
         }
     });
-
-
-
-    /*document.getElementById("btn-startmatch").addEventListener("click", function (e) {
-        cargs.length = 0;
-        resolveCargs();
-        cargs.push('-host', numPlayers);
-
-
-        console.log(cargs);
-        if ( process.platform == "win32")
-        {
-          const xenomia = spawn(path.resolve(__dirname + '/../../../xenomia.exe'), cargs);
-          xenomia.stdout.on('data', (data) => {
-            console.log('stdout: $data');
-          });
-        }
-        else if (process.platform == "linux")
-        {
-          const xenomia = spawn(path.resolve(__dirname + '/../xenomia'), cargs);
-          xenomia.stdout.on('data', (data) => {
-            console.log('stdout: ' + data);
-          });
-
-          xenomia.stdout.on('close', (data) => {
-            console.log('stdout: ' + data);
-          });
-        }
-        else
-        {
-            alert("Xenomia is not yet supported on your system.");
-        }
-
-    });
-    */
-
-    /*document.getElementById("btn-joinmatch").addEventListener("click", function (e) {
-      hostIP = document.getElementById("hostIP").value;
-      if (hostIP == 0 || hostIP == "")
-      {
-        alert("You must enter the host's IP address to join a game.");
-      }
-      else {
-        cargs.length = 0;
-        resolveCargs();
-        cargs.push("-join", hostIP);
-        if ( process.platform == "win32")
-        {
-          const xenomia = spawn(path.resolve(__dirname + '/../../../xenomia.exe'), cargs);
-          xenomia.stdout.on('data', (data) => {
-            console.log('stdout: $data');
-          });
-        }
-        else if (process.platform == "linux")
-        {
-          const xenomia = spawn(path.resolve(__dirname + '/../../../xenomia'), cargs);
-          xenomia.stdout.on('data', (data) => {
-            console.log('stdout: ' + data);
-          });
-
-          xenomia.stdout.on('close', (data) => {
-            console.log('stdout: ' + data);
-          });
-        }
-      }
-    });
-    */
-
-    /*document.getElementById("btn-refreshIP").addEventListener("click", function (e) {
-      setIP();
-    });*/
-
     document.getElementById("btn-passwordsave").addEventListener("click", function (e) {
       changePassword();
     });
@@ -205,7 +153,7 @@ var server = dgram.createSocket({type:'udp4', reuseAddr: true });
       init();
       initMatch();
       $(this).delay(10000).queue(function() {
-        server.close();
+        //server.close();
         $(this).dequeue();
 
   });
@@ -223,8 +171,6 @@ function setTimelimit(limit) {
 function setTeam(newTeam, newColor) {
   splitTeam = newTeam.split("-");
   team = splitTeam[splitTeam.length-1];
-  //var span = document.getElementById("gameSelectedTeam");
-  //span.textContent = teams[team];
   settings.set('teamcolor', team);
   $("#game-team-color").css('background', newColor);
 }
@@ -252,49 +198,43 @@ function setPlayerCount(players) {
 }
 
 function setIP() {
-  //document.write("My public IP address is: ", json.ip);
   $.get('http://api.ipify.org', function(response){
-    //var ipDiv = document.getElementById("client-ip");
-    //ipDiv.textContent = response;
     ip = response;
     getHostStatus();
   });
 
-  'use strict';
+  // Start a Polo service advertising the game with its gamename.
+  var poloServer = http.createServer(function(req, res) {
+  if (req.url !== '/') {
+      res.writeHead(404);
+      res.end();
+      return;
+  }
 
-  var os = require('os');
-  var ifaces = os.networkInterfaces();
-
-  Object.keys(ifaces).forEach(function (ifname) {
-    var alias = 0;
-
-    ifaces[ifname].forEach(function (iface) {
-      if ('IPv4' !== iface.family || iface.internal !== false) {
-        // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
-        return;
-      }
-
-      if (alias >= 1) {
-        // this single interface has multiple ipv4 addresses
-        console.log(ifname + ':' + alias, iface.address);
-        if (lanIP == 0)
-        {
-          lanIP = iface.address;
-          //document.getElementById("lan-ip").textContent = lanIP;
-        }
-      } else {
-        // this interface has only one ipv4 adress
-        console.log(ifname, iface.address);
-        if (lanIP == 0)
-        {
-          lanIP = iface.address;
-          //document.getElementById("lan-ip").textContent = lanIP;
-        }
-      }
-      ++alias;
-    });
+  res.end('hello-http is available at http://'+zeroconf.get('hello-http').address);
   });
 
+  zeroconf.on('up', function(name, service) { // up fires everytime some service joins
+    var host = service.host;
+    console.log('[up]', name, service.host+':'+service.port);  // check if this is the host
+    if ( host != null && host != "0" )
+    {
+      console.log("service at address: " + service.host);
+      poloServer.close(function (){
+        lanIP = host;
+      });
+    }
+  });
+
+  poloServer.listen(0, function() {
+      var port = poloServer.address().port; // let's find out which port we binded to
+      console.log("poloServer bound to port " + port);
+      console.log("about to perform service discovery for game " + gamename);
+        zeroconf.put({
+            name: 'xenomia',
+            port: port
+        });
+  });
 }
 
 // Opens a UDP socket on port 5029 and listens.
@@ -309,44 +249,72 @@ function getHostStatus() {
   server = dgram.createSocket({type:'udp4', reuseAddr: true });
 
   server.on('listening', function () {
+      UDPActive = true;
+      server.setBroadcast(true);
       var address = server.address();
       console.log('UDP Server listening on ' + address.address + ":" + address.port);
+      var message = new Buffer('testing');
+      server.send(message, 0, message.length, 8000, 'xenomia.com');
+      server.send(message, 0, message.length, 8000, 'personalab.net');
   });
 
   server.on('error', function(error)  {
-    console.log(error);
+    console.log("SERVER ERROR: " + error);
     server.close();
   });
 
   server.on('message', function (message, remote) {
-      console.log(remote.address + ':' + remote.port +' - ' + message);
-      if(message == "Xenomia")
+      console.log(remote.address + ':' + remote.port +' - ' + message.toString());
+      var components = String(message).split(':');
+      if (components.length == 2)
+      {
+        hostIP = components[0];
+        hostPort = components[1];
+        console.log(components[1]);
+      }
+
+      if(message == "xenomia")
       {
         hostStatus = "Your computer is able to host Xenomia!";
-        server.close();
+        //server.close();
         var status = document.getElementById("host-status");
         status.textContent = hostStatus;
         if(status) {
           status.className = 'center-block alert alert-success';
         }
+      } else {
+        console.log(message);
+        if (typeof hostIncomingPacket === "function")
+        {
+          hostIncomingPacket(message.toString())
+        }
+        if (typeof guestIncomingPacket === "function")
+        {
+          guestIncomingPacket(message.toString())
+        }
       }
   });
 
-  $.get("http://xenomia.com/portscan.php?ip=" + ip, function(data, status){
-       //alert("Data: " + data + "\nStatus: " + status);
+  server.on('close', function(){
+    UDPActive = false;
+  });
+
+  $.get("https://xenomia.com/portscan.php?ip=" + ip, function(data, status){
        if (data == "failure")
        {
          hostStatus = "Unable to host. Please forward UDP port 5029.";
-         server.close();
-         var status = document.getElementById("host-status");
-         status.textContent = hostStatus;
-         if(status) {
-           status.className = 'center-block alert alert-danger';
-         }
        }
    });
+   //natman(8000, 8000);
 
-   server.bind(PORT);
+   server.bind(5029);
+}
+
+function resetServer()
+{
+  if (UDPActive == false) {
+    getHostStatus()
+  }
 }
 
 function changePassword()
