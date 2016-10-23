@@ -17,7 +17,7 @@ const teamColors = ['#FBF235', '#5A6EE1', '#6BBE30', '#76428A', '#DF7126', '#D77
 const maps = [{ name: 'Unjust Deserts',
                 filename: 'XENMAP01'},
               {
-                name: 'The Dome',
+                name: 'Bridge Under Troubled Water',
                 filename: 'XENMAP03'}
               ];
 const launcherVersion = 17;
