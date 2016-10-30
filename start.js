@@ -20,7 +20,7 @@ const maps = [{ name: 'Unjust Deserts',
                 name: 'Bridge Under Troubled Water',
                 filename: 'XENMAP03'}
               ];
-const launcherVersion = 18;
+const launcherVersion = 19;
 var dgram = require('dgram');
 var server = dgram.createSocket({type:'udp4', reuseAddr: true });
 var natman = require('natman-api');
