@@ -4,6 +4,7 @@ var team = 0;
 var teamChanges = 0;
 var hostIP = 0;
 var hostPort = 0;
+var clientPorts = [];
 var numPlayers = 1;
 var ip = 0;
 var lanIP = 0;
@@ -20,12 +21,22 @@ const maps = [{ name: 'Unjust Deserts',
                 name: 'Bridge Under Troubled Water',
                 filename: 'XENMAP03'}
               ];
-const launcherVersion = 19;
+const launcherVersion = 21;
 var dgram = require('dgram');
 var server = dgram.createSocket({type:'udp4', reuseAddr: true });
-var natman = require('natman-api');
 const defCargs = ['-deathmatch', '+teamplay', '1', '+set', 'sv_samelevel', '1', '-extratic'];
 var cargs = [];
+
+var turn = require('turn-js')
+const turnAddr = 'dramatech.net'
+const turnPort = 3478
+const turnUser = 'xenomia-turn'
+const turnPwd = 'rackergamers'
+var relayAddress = ''
+var relayPort = ''
+var realIP = ''
+var client = turn(turnAddr, turnPort, turnUser, turnPwd)
+
 
 // LAN autodiscovery
 var polo = require('polo');
@@ -253,6 +264,7 @@ function getHostStatus() {
       server.setBroadcast(true);
       var address = server.address();
       console.log('UDP Server listening on ' + address.address + ":" + address.port);
+
       var message = new Buffer('testing');
       var max = 0
       function pingMatchmaker() {
@@ -264,7 +276,34 @@ function getHostStatus() {
       }
 
       pingMatchmaker()
-      server.send(message, 0, message.length, 8000, 'personalab.net');
+
+      //Test TURN connection
+      client.on('relayed-message', function (bytes, peerAddress) {
+        var message = bytes.toString()
+        console.log('received message: ' + bytes.toString('hex') + ' from: ' + peerAddress)
+        if (typeof hostIncomingPacket === "function")
+        {
+          hostIncomingPacket(message)
+        }
+        if (typeof guestIncomingPacket === "function")
+        {
+          guestIncomingPacket(message)
+        }
+        server.send(bytes, 0, bytes.length, 5029, '127.0.0.1');
+      })
+
+      client.allocateP().then(function (allocateAddress) {
+        srflxAddress = allocateAddress.mappedAddress
+        relayAddress = allocateAddress.relayedAddress
+        console.log("srflx address: " + srflxAddress.address + ':' + srflxAddress.port)
+        console.log("relay address: " + relayAddress.address + ':' + relayAddress.port)
+        client.createPermissionP('45.79.8.125').then(function () {
+          hostIP = relayAddress.address
+          hostPort = relayAddress.port
+        })
+
+      })
+
   });
 
   server.on('error', function(error)  {
@@ -273,35 +312,35 @@ function getHostStatus() {
   });
 
   server.on('message', function (message, remote) {
-      console.log(remote.address + ':' + remote.port +' - ' + message.toString());
-      var components = String(message).split(':');
-      if (components.length == 2)
-      {
-        hostIP = components[0];
-        hostPort = components[1];
-        console.log(components[1]);
-      }
-
-      if(message == "xenomia")
-      {
-        hostStatus = "Your computer is able to host Xenomia!";
-        //server.close();
-        var status = document.getElementById("host-status");
-        status.textContent = hostStatus;
-        if(status) {
-          status.className = 'center-block alert alert-success';
+      console.log("FROM GAME:" + remote.address + ':' + remote.port +' - ' + message.toString('hex') + " length:" + message.length);
+      if (realIP == '') {
+        var components = message.toString().split(':')
+        if (components.length == 2)
+        {
+          realIP = components[0];
+          //hostPort = components[1];
+          console.log("Real external IP: " + components[0]);
         }
       } else {
-        console.log(message);
-        if (typeof hostIncomingPacket === "function")
-        {
-          hostIncomingPacket(message.toString())
-        }
-        if (typeof guestIncomingPacket === "function")
-        {
-          guestIncomingPacket(message.toString())
+          if (client !== undefined && hostPort != '') {
+            console.log("FROM RELAY:" + remote.address + ':' + remote.port +' - ' + message.toString('hex') + " length:" + message.length);
+            $.each(clientPorts, function(address, relay){
+              console.log(relay.address)
+              console.log(relay.port)
+            client.sendToChannel(
+              message,
+              relay.port,
+              function () {
+                console.log('sent game data.')
+              },
+              function (error) {
+                console.error(error)
+              }
+            )
+          })
         }
       }
+
   });
 
   server.on('close', function(){
@@ -314,9 +353,7 @@ function getHostStatus() {
          hostStatus = "Unable to host. Please forward UDP port 5029.";
        }
    });
-   //natman(8000, 8000);
-
-   server.bind(5029);
+   server.bind(5030);
 }
 
 function resetServer()

@@ -14,9 +14,10 @@ function resolveHostIPs(callback)
           var playername = player.gamertag
           var playerishost = player.ishost
           var ip = player.IPAddr
+          var realExternalIP = player.realIP
           var port = player.externalport
           console.log("Found IPAddr: ")
-            if (ip != internetIP)
+            if (realExternalIP != realIP)
             {
               console.log("pushing IP.")
               ipSet.push({
@@ -37,22 +38,91 @@ function puncherSend(addresses, message) {
   function timeoutPuncher() {
     var localAddr = addresses
     var buf = new Buffer(message)
+    clientPorts = [];
     $.each(localAddr, function(idx, address){
       if (address.address != undefined && address.port != undefined)
       {
+        var channel = client.bindChannelP(address.address, address.port)
+        .then(function (newChan) {
+          console.log("newChan: " + newChan)
+          hostPort = newChan
+          clientPorts.push({port : newChan,
+                            address : address.address})
+          // get a TURN relay going
+          function send() {
+            console.log("CHANNEL: " + newChan)
+          client.sendToChannel(
+            buf,
+            newChan,
+            function () {
+              console.log('sent message.')
+            },
+            function (error) {
+              console.error(error)
+            }
+          )
+
+          if (matchState == matchStates.LAUNCH_SEQUENCE)
+          {
+            setTimeout(send, 200)
+          } else {
+            console.log("closing channel.")
+            //client.closeP()
+          }
+        }
+
+          send()
+
+        }).catch(function (error){
+          //var errorstr = error.split(':')[1]
+          console.log("ERROR OPENING CHANNEL: " + error)
+          //if (error == "Error: bind error: You cannot use the same peer with different channel number") {
+            console.log("channel already open. launching on open channel.")
+            // get a TURN relay going
+            function send() {
+              var sendPort = ''
+              $.each(clientPorts, function(idx, relay){
+                console.log(relay)
+                console.log("ADDRESS: " + address.address)
+                if (relay.address == address.address) {
+                  sendPort = relay.port
+                }
+              })
+              console.log("CHANNEL: " + sendPort)
+            client.sendToChannel(
+              buf,
+              sendPort,
+              function () {
+                console.log('sent message.')
+              },
+              function (error) {
+                console.error(error)
+              }
+            )
+
+            if (matchState == matchStates.LAUNCH_SEQUENCE)
+            {
+              setTimeout(send, 200)
+            } else {
+              console.log("closing channel.")
+              //client.closeP()
+            }
+          }
+
+            send()
+          //}
+        })
+
+
         //server.send(message, 0, message.length, 8000, 'xenomia.com');
-        server.send(buf, 0, buf.length, address.port, address.address, function(err, bytes) {
+        /*server.send(buf, 0, buf.length, address.port, address.address, function(err, bytes) {
           if (err){
             throw err
           }
           console.log('UDP message sent to ' + address.address +':'+ address.port)
-        });
+        });*/
       }
     })
-    if (matchState == matchStates.LAUNCH_SEQUENCE)
-    {
-      setTimeout(timeoutPuncher, 500)
-    }
   }
   timeoutPuncher()
 }
@@ -68,21 +138,11 @@ function holepunchIPs(addresses, callback)
   var failure = false;
     console.log("socket:");
     console.log(server);
-      //var testMessage = new Buffer('testing')
-      //server.send(testMessage, 0, testMessage.length, 8000, 'xenomia.com')
-
-      /* Data structure for launch sequence
-        [{
-          gamertag: String
-          address: String
-          port: Int
-          attached: Bool
-          isHost: Bool
-        }]
-      */
 
       // Start the launch sequence. All clients send to all other clients.
       matchState = matchStates.LAUNCH_SEQUENCE
+      launchTransition(true)
+
       //var message = new Buffer(gamertag);
       puncherSend(addresses, gamertag)
 
@@ -183,6 +243,7 @@ function holepunchIPs(addresses, callback)
         if (matchState == matchStates.LAUNCH_SEQUENCE)
         {
           alert("Failed to connect!")
+          launchTransition(false)
           resetServer()
           callback(false)
         }
@@ -229,7 +290,7 @@ function launchSinglePlayer()
 function launchAsGuest()
 {
   console.log("launching.");
-
+  $('#launcher-lock-panel').css('visibility', 'visible')
     getRecord('filter=GameID%3D' + matchID, '/match', function(response){
       console.log("got match record.");
       resolveHostIPs(function(ips){
@@ -242,30 +303,35 @@ function launchAsGuest()
             {
               matchState = matchStates.IN_PROGRESS
               console.log("holepunching successful.");
-              var ip = response[0].hostIP;
+              var ip = response[0].hostIP
+              var realExternal = response[0].realIP
+              var port = response[0].hostport
               console.log(internetIP);
-              if (ip == internetIP)
+              if (realExternal == realIP)
               {
                 ip = response[0].hostlanip;
               }
-                var guestCargs = ["-join", ip, "+team", team, "+set", "name", gamertag];
+                //var guestCargs = ["-join", ip+":"+port, "+team", team, "+set", "name", gamertag];
+                var guestCargs = ["-join", "127.0.0.1:5030", "+team", team, "+set", "name", gamertag];
                 console.log(guestCargs);
 
                 function launch() {
                   startGame(guestCargs)
                 }
 
-                server.close(function(){
+                //server.close(function(){
                   guestIncomingPacket = undefined
                   setTimeout(launch, 101);
-                });
+                //});
             }
             else
             {
+              $('#launcher-lock-panel').css('visibility', 'hidden')
               matchState = matchStates.IN_LOBBY
               resetServer()
               resetMatch()
               alert("failed to connect!")
+              launchTransition(false)
             }
           });
         }
@@ -315,6 +381,7 @@ function launchAsHost()
   if (inGame == false)
   {
     inGame = true;
+    $('#launcher-lock-panel').css('visibility', 'visible')
     getRecord('filter=GameID%3D' + matchID, '/match', function(response){
     var players = response[0].playersonline_by_Match;
     /*if (players < response[0].lobbysize)
@@ -366,21 +433,23 @@ function launchAsHost()
                       cargs.push("+map", "XENMAP01");
                     }
                     cargs.push('-host', playerCount);
-                    cargs.push('-netmode', '1');
+                    cargs.push('-netmode', '0');
                     cargs.push('-extratic');
                     cargs.push('-dup', '2');
                     console.log(cargs);
                     startGame(cargs);
                 }
                 console.log("about to launch.")
-                server.close(function(){
+                //server.close(function(){
                   hostIncomingPacket = undefined
                   matchState = matchStates.IN_PROGRESS
                   setTimeout(launch, 101);
-                });
+                //});
                 }
                 else {
-                  alert("failed to connect!");
+                  alert("failed to connect!")
+                  $('#launcher-lock-panel').css('visibility', 'hidden')
+                  launchTransition(false)
                   resetServer()
                   matchState = matchStates.IN_LOBBY
                   resetMatch()
@@ -437,6 +506,7 @@ function launchAsHost()
           }
           cargs.push('-host', 1)
           console.log(cargs)
+          $('#launcher-lock-panel').css('visibility', 'hidden')
           startGame(cargs)
         }
       });
@@ -459,21 +529,11 @@ function startGame(cargs) {
     //const xenomia = spawn("osascript",  ["-e 'tell application \"Terminal\" to do script \"cd" + path.resolve(__dirname + '/../xenomia.app/Contents/MacOS/') + "&& ./gloome -host 2" + cargs + "\"'"])
     //const xenomia = spawn('#!/bin/sh osascript <<END tell application "Terminal" do script .' + path.resolve(__dirname + '/../' + binaryName  + ";$1;exit end tell END"), cargs)
     const xenomia = spawn(path.resolve(__dirname + '/../game/' + binaryName), cargs)
-
-/*
-    function killGame() {
-      console.log("killing game.")
-      xenomia.kill('SIGTERM')
-    };
-
-
-    setTimeout(killGame, 4000)
-    */
-
     xenomia.stdout.on('data', (data) => {
       console.log('stdout: ' + data);
     });
     xenomia.on('close', (code) => {
+      $('#launcher-lock-panel').css('visibility', 'hidden')
       //resetServer()
       if (matchID != null) {
         leaveGame()
@@ -491,9 +551,11 @@ function startGame(cargs) {
       console.log('stdout: $data');
     });
     xenomia.on('close', (code) => {
+      $('#launcher-lock-panel').css('visibility', 'hidden')
       //resetServer()
       if (matchID != null && matchID != 0) {
         leaveGame()
+        //client.closeP()
         $('#main-tabs a[href="#lobby"]').tab('show');
       }
       matchState = matchStates.OUT_OF_GAME

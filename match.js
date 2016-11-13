@@ -70,15 +70,24 @@ function refreshAllGames()
       {
         $("#open-games").append('<a href="#" class="list-group-item game-item"><span class="closed-game-item"> (FULL) ' + name + '</span></a>');
       }
-      else if (players.length <= 0)
+      /*else if (players.length <= 0)
       {
         deleteRecord('', '/match', '?filter=GameID%3D' + match.GameID, function(response){
           //console.log(response);
         });
-      }
+      }*/
     });
     setTimeout(refreshAllGames, 5000);
   });
+}
+
+function launchTransition(show)
+{
+  if (show == true) {
+
+  } else {
+
+  }
 }
 
 function resetMatch()
@@ -110,6 +119,7 @@ function refreshMatch()
         if (players.length > 0)
         {
           matchPlayerInfo = [];
+          matchPlayers = [];
           $("#match-players").empty();
           gameReady = true;
           $.each(players, function(idx, player){
@@ -298,6 +308,7 @@ function resetMatchTab(isHost, shouldShow)
     $('#leave-match-button').css('visibility','visible');
     $("#game-chat-container").css('visibility', 'visible');
     $("#local-player").css('visibility', 'visible');
+    $('#launcher-lock-panel').css('visibility', 'hidden')
     if (!isHost) {
       $('#ready-checkbox').css('visibility','visible')
     }
@@ -309,6 +320,7 @@ function resetMatchTab(isHost, shouldShow)
     $('#match-settings').css('visibility','hidden');
     $('#leave-match-button').css('visibility','hidden');
     $('#ready-checkbox').css('visibility','hidden')
+    $('#launcher-lock-panel').css('visibility', 'hidden')
     $("#game-chat-container").css('visibility', 'hidden');
   }
 }

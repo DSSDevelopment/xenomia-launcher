@@ -90,7 +90,7 @@ function chatLogin() {
         $("#latest-news").attr("class", "latest-news-expanded");
         setTimeout(chatReady, 3000);
         initMatchmaker();
-        registerPlayer(gamertag, team, hostIP, lanIP, hostPort);
+        registerPlayer(gamertag, team, hostIP, lanIP, hostPort, realIP);
         refreshAllGames();
 
         connection.send(new xmpp.Stanza('presence', { to: room +'/' + login }).
@@ -270,18 +270,18 @@ function appendToGameChat(sender, message) {
   //put in the game chat log UI
   if (sender == "system")
   {
-    $('#game-timestamp-container').before("<p class='chat-text'>" + message + "</p>")
+    $('#game-messages').append("<p class='chat-text'>" + message + "</p>")
   } else {
     var idx = $.inArray(sender, knownAdmins)
     if (idx > -1)
     {
-      $('#game-timestamp-container').before("<p class='moderator-chat-name'>" + sender + ": <span class='moderator-chat-text'>" + message + "</span></p>");
+      $('#game-messages').append("<p class='moderator-chat-name'>" + sender + ": <span class='moderator-chat-text'>" + message + "</span></p>")
     }
     else {
-      $('#game-timestamp-container').before("<p class='chat-name'>" + sender + ": <span class='chat-text'>" + message + "</span></p>");
+      $('#game-messages').append("<p class='chat-name'>" + sender + ": <span class='chat-text'>" + message + "</span></p>")
     }
-    $('#game-messages').stop();
-    $("#game-messages").animate({ scrollTop: $('#game-messages').prop("scrollHeight")}, 500);
+    $('#game-messages').stop()
+    $("#game-messages").animate({ scrollTop: $('#game-messages').prop("scrollHeight")}, 500)
   }
 }
 

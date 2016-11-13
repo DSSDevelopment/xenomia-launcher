@@ -61,6 +61,7 @@ function createGame(gamename, lobbysize)
     alert("Game names cannot contain quotes.");
       return;
   }
+
   var params = {
     "gamename" : gamename,
     "lobbysize" : lobbysize,
@@ -75,10 +76,10 @@ function createGame(gamename, lobbysize)
     if (newGameID != null)
     {
       resetServer()
+      resetMatchTab(true, true)
       joinGameChat(gamename)
       matchState = matchStates.IN_LOBBY
-      resetMatchTab(true, true)
-      matchID = newGameID;
+      matchID = newGameID
       isHost = true;
       var params = {
         "ishost" : true,
@@ -155,11 +156,12 @@ function leaveGame(callback)
     //resetServer()
     leaveGameChat()
     matchState = matchStates.OUT_OF_GAME
-    inGame = false;
-    matchID = null;
-    hosting = false;
-    gamename = "";
-    console.log("leaving game");
+    inGame = false
+    lastMatch = matchID
+    matchID = null
+    hosting = false
+    gamename = ""
+    console.log("leaving game")
     resetMatchTab(false, false)
     document.getElementById("game-name-label").textContent = "Join or Create a game in the Lobby";
     var params = {
@@ -168,7 +170,8 @@ function leaveGame(callback)
       "ishost" : false,
       "Match" : null,
       "locked" : false,
-      "attached" : false
+      "attached" : false,
+      "lastmatch" : lastMatch,
     };
     var filter = '?filter=gamertag%3D' + localGamertag;
     updateRecord(params, '/playersonline', filter, callback);

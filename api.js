@@ -1,7 +1,7 @@
 var auth = false
 
 // need to connect to API server and register a player.
-function registerPlayer(gamertag, teamcolor, ipAddr, lanIPAddr, remotePort)
+function registerPlayer(gamertag, teamcolor, ipAddr, lanIPAddr, remotePort, realIPAddr)
 {
   var callback = function(response) {
     console.log("REGISTERPLAYER()");
@@ -10,6 +10,7 @@ function registerPlayer(gamertag, teamcolor, ipAddr, lanIPAddr, remotePort)
     localIP = lanIPAddr;
     internetIP = ipAddr;
     internetPort = remotePort;
+    realIP = realIPAddr;
     localTeamcolor = teamcolor;
     ready = false;
     if (response.length > 0 && response[0].PID >= 0)
@@ -32,7 +33,8 @@ function registerPlayer(gamertag, teamcolor, ipAddr, lanIPAddr, remotePort)
         "ishost" : false,
         "Match" : null,
         "locked" : false,
-        "attached" : false
+        "attached" : false,
+        "realIP" : realIP
       };
       var filter = '?filter=gamertag%3D' + gamertag;
       updateRecord(params, '/playersonline', filter, callback);
@@ -46,7 +48,8 @@ function registerPlayer(gamertag, teamcolor, ipAddr, lanIPAddr, remotePort)
         "IPAddr" : ipAddr,
         "externalport" : remotePort,
         "lanIP" : lanIPAddr,
-        "teamcolor" : teamcolor
+        "teamcolor" : teamcolor,
+        "realIP" : realIP
       };
       setRecord(params, '/playersonline', function(response){
         auth = true
