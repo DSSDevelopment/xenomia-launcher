@@ -21,7 +21,7 @@ const maps = [{ name: 'Unjust Deserts',
                 name: 'Bridge Under Troubled Water',
                 filename: 'XENMAP03'}
               ];
-const launcherVersion = 21;
+const launcherVersion = 22;
 var dgram = require('dgram');
 var server = dgram.createSocket({type:'udp4', reuseAddr: true });
 const defCargs = ['-deathmatch', '+teamplay', '1', '+set', 'sv_samelevel', '1', '-extratic'];
@@ -300,6 +300,18 @@ function getHostStatus() {
         client.createPermissionP('45.79.8.125').then(function () {
           hostIP = relayAddress.address
           hostPort = relayAddress.port
+          function keepalive() {
+            client.refresh(300, function() {
+              console.log("keepalive.")
+              setTimeout(keepalive, 3000);
+            }, function(error) {
+              console.log("keepalive error.")
+              alert("lost connection to game server! Please close the launcher and login again.")
+            })
+          }
+          keepalive()
+
+
         })
 
       })
@@ -313,7 +325,7 @@ function getHostStatus() {
 
   server.on('message', function (message, remote) {
       console.log("FROM GAME:" + remote.address + ':' + remote.port +' - ' + message.toString('hex') + " length:" + message.length);
-      if (realIP == '') {
+      if (realIP == '' && matchState != matchStates.IN_PROGRESS) {
         var components = message.toString().split(':')
         if (components.length == 2)
         {
@@ -322,7 +334,7 @@ function getHostStatus() {
           console.log("Real external IP: " + components[0]);
         }
       } else {
-          if (client !== undefined && hostPort != '') {
+          //if (client !== undefined && hostPort != '') {
             console.log("FROM RELAY:" + remote.address + ':' + remote.port +' - ' + message.toString('hex') + " length:" + message.length);
             $.each(clientPorts, function(address, relay){
               console.log(relay.address)
@@ -338,7 +350,7 @@ function getHostStatus() {
               }
             )
           })
-        }
+        //}
       }
 
   });

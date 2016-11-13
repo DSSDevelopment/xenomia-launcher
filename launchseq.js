@@ -436,6 +436,7 @@ function launchAsHost()
                     cargs.push('-netmode', '0');
                     cargs.push('-extratic');
                     cargs.push('-dup', '2');
+                    cargs.push('-debugfile')
                     console.log(cargs);
                     startGame(cargs);
                 }
@@ -518,7 +519,7 @@ function launchAsHost()
 }
 
 function startGame(cargs) {
-
+  matchState = matchStates.IN_PROGRESS
   if (process.platform == "darwin") {
     //macexec = require("child_process").exec
     binaryName = "xenomia"
