@@ -437,7 +437,7 @@ function launchAsHost()
                     cargs.push('-netmode', '0');
                     cargs.push('-extratic');
                     cargs.push('-dup', '2');
-                    cargs.push('-debugfile')
+                    //cargs.push('-debugfile')
                     console.log(cargs);
                     startGame(cargs);
                 }
@@ -527,11 +527,11 @@ function startGame(cargs) {
   function refreshChannels() {
     console.log("REFRESHING CHANNELS")
     $.each(clientPorts, function(address, relay){
-    client.bindChannelP(relay.address, relay.originalPort).then (function(newChan) {
+    client.bindChannelP(relay.address, relay.originalPort, relay.port).then (function(newChan) {
       console.log("reopened channel to " + newChan)
     })
   })
-  if (matchstate == matchStates.IN_PROGRESS) {
+  if (matchState == matchStates.IN_PROGRESS) {
     setTimeout(refreshChannels, 60000)
   }
   }

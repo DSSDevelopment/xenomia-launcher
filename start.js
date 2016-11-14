@@ -21,7 +21,7 @@ const maps = [{ name: 'Unjust Deserts',
                 name: 'Bridge Under Troubled Water',
                 filename: 'XENMAP03'}
               ];
-const launcherVersion = 23;
+const launcherVersion = 24;
 var dgram = require('dgram');
 var server = dgram.createSocket({type:'udp4', reuseAddr: true });
 const defCargs = ['-deathmatch', '+teamplay', '1', '+set', 'sv_samelevel', '1', '-extratic'];
@@ -280,7 +280,7 @@ function getHostStatus() {
       //Test TURN connection
       client.on('relayed-message', function (bytes, peerAddress) {
         var message = bytes.toString()
-        console.log('received message: ' + bytes.toString('hex') + ' from: ' + peerAddress)
+        //console.log('received message: ' + bytes.toString('hex') + ' from: ' + peerAddress)
         if (typeof hostIncomingPacket === "function")
         {
           hostIncomingPacket(message)
@@ -303,7 +303,7 @@ function getHostStatus() {
           function keepalive() {
             client.refresh(10000, function() {
               console.log("keepalive.")
-              setTimeout(keepalive, 10000);
+              setTimeout(keepalive, 60000);
             }, function(error) {
               console.log("keepalive error.")
               alert("lost connection to game server! Please close the launcher and login again.")
@@ -324,7 +324,7 @@ function getHostStatus() {
   });
 
   server.on('message', function (message, remote) {
-      console.log("FROM GAME:" + remote.address + ':' + remote.port +' - ' + message.toString('hex') + " length:" + message.length);
+      //console.log("FROM GAME:" + remote.address + ':' + remote.port +' - ' + message.toString('hex') + " length:" + message.length);
       if (realIP == '' && matchState != matchStates.IN_PROGRESS) {
         var components = message.toString().split(':')
         if (components.length == 2)
@@ -337,8 +337,8 @@ function getHostStatus() {
           //if (client !== undefined && hostPort != '') {
             //console.log("FROM RELAY:" + remote.address + ':' + remote.port +' - ' + message.toString('hex') + " length:" + message.length);
             $.each(clientPorts, function(address, relay){
-              console.log(relay.address)
-              console.log(relay.port)
+              //console.log(relay.address)
+              //console.log(relay.port)
             client.sendToChannel(
               message,
               relay.port,
