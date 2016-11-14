@@ -21,7 +21,7 @@ const maps = [{ name: 'Unjust Deserts',
                 name: 'Bridge Under Troubled Water',
                 filename: 'XENMAP03'}
               ];
-const launcherVersion = 22;
+const launcherVersion = 23;
 var dgram = require('dgram');
 var server = dgram.createSocket({type:'udp4', reuseAddr: true });
 const defCargs = ['-deathmatch', '+teamplay', '1', '+set', 'sv_samelevel', '1', '-extratic'];
@@ -301,9 +301,9 @@ function getHostStatus() {
           hostIP = relayAddress.address
           hostPort = relayAddress.port
           function keepalive() {
-            client.refresh(300, function() {
+            client.refresh(10000, function() {
               console.log("keepalive.")
-              setTimeout(keepalive, 3000);
+              setTimeout(keepalive, 10000);
             }, function(error) {
               console.log("keepalive error.")
               alert("lost connection to game server! Please close the launcher and login again.")
@@ -335,7 +335,7 @@ function getHostStatus() {
         }
       } else {
           //if (client !== undefined && hostPort != '') {
-            console.log("FROM RELAY:" + remote.address + ':' + remote.port +' - ' + message.toString('hex') + " length:" + message.length);
+            //console.log("FROM RELAY:" + remote.address + ':' + remote.port +' - ' + message.toString('hex') + " length:" + message.length);
             $.each(clientPorts, function(address, relay){
               console.log(relay.address)
               console.log(relay.port)
@@ -343,7 +343,7 @@ function getHostStatus() {
               message,
               relay.port,
               function () {
-                console.log('sent game data.')
+                //console.log('sent game data.')
               },
               function (error) {
                 console.error(error)

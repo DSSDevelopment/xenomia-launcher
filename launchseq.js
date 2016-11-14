@@ -47,7 +47,8 @@ function puncherSend(addresses, message) {
           console.log("newChan: " + newChan)
           hostPort = newChan
           clientPorts.push({port : newChan,
-                            address : address.address})
+                            address : address.address,
+                            originalPort: address.port})
           // get a TURN relay going
           function send() {
             console.log("CHANNEL: " + newChan)
@@ -520,6 +521,23 @@ function launchAsHost()
 
 function startGame(cargs) {
   matchState = matchStates.IN_PROGRESS
+
+  // According to RFC 5766 TURN channels will expire after ten minutes
+  // if not refreshed by issuing another channelBind
+  function refreshChannels() {
+    console.log("REFRESHING CHANNELS")
+    $.each(clientPorts, function(address, relay){
+    client.bindChannelP(relay.address, relay.originalPort).then (function(newChan) {
+      console.log("reopened channel to " + newChan)
+    })
+  })
+  if (matchstate == matchStates.IN_PROGRESS) {
+    setTimeout(refreshChannels, 60000)
+  }
+  }
+
+  setTimeout(refreshChannels, 60000)
+
   if (process.platform == "darwin") {
     //macexec = require("child_process").exec
     binaryName = "xenomia"
@@ -540,6 +558,7 @@ function startGame(cargs) {
         leaveGame()
         $('#main-tabs a[href="#lobby"]').tab('show');
       }
+      matchState = matchStates.OUT_OF_GAME
       console.log(`child process exited with code ${code}`);
     });
 
