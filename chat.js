@@ -55,7 +55,7 @@ function initChat() {
 };
 
 function joinGameChat(gamename) {
-  matchLobby = gamename + "-lobby-chat"
+  matchLobby = gamename.replace(/\s/g, "__") + "-lobby-chat"
   connection.send(new xmpp.Stanza('presence', { to: matchLobby + chatServer + '/' + login }).
     c('x', { xmlns: 'http://jabber.org/protocol/muc' })
   );

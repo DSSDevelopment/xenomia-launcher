@@ -2,10 +2,14 @@
 var apiHost = "http://dramatech.net/api/v2";
 const APP_API_KEY = '76c6e95ade3a42438d0eb8b0b2816dcbeb7c3c1ed658ffce9ed0a9093c0dc9eb';
 
+var app = require('electron').remote;
+var dialog = app.dialog;
+
 var localGamertag;
 var localIP;
 var internetIP;
 var internetPort;
+var extraFiles = [];
 
 var matchID = null;
 var localTeamcolor;
@@ -33,6 +37,27 @@ var UdpHolePuncher = require('udp-hole-puncher');
 const matchRemote = require('electron').remote;
 const path = require('path');
 const spawn = require('child_process').spawn;
+
+function initFileLoader() {
+  $('#extra-files-list').tagsInput({
+  interactive:false,
+  onRemoveTag : function(tag) {
+    console.log("removing: " + tag)
+    var removeIndex = -1
+    $.each(extraFiles, function(idx, fileName){
+      if (tag = getTagShortName(fileName)) {
+        removeIndex = idx
+      }
+    });
+    if (removeIndex > -1) {
+      extraFiles.splice(removeIndex, 1)
+    }
+  }
+});
+  document.getElementById("btn-custom-files").addEventListener("click", function (e) {
+    addCustomFiles()
+  });
+}
 
 
 function refreshAllGames()
@@ -107,6 +132,9 @@ function refreshMatch()
         gamename = response[0].gamename;
         var starting = response[0].starting;
         var lobbysize = response[0].lobbysize;
+        if (!isHost && response[0].ExtraFiles != null) {
+          processExtraFilesFromString(response[0].ExtraFiles)
+        }
         if (starting == true && hosting == false && inGame == false)
         {
           starting = false;
@@ -309,19 +337,30 @@ function resetMatchTab(isHost, shouldShow)
     $("#game-chat-container").css('visibility', 'visible');
     $("#local-player").css('visibility', 'visible');
     $('#launcher-lock-panel').css('visibility', 'hidden')
+    $('#extra-files-list').importTags('')
     if (!isHost) {
       $('#ready-checkbox').css('visibility','visible')
+      $('#game-chat-container').css('height', 'calc(100% - 44px)')
+      $('#game-chat-container').css('margin-top', '8px')
+      $('#leave-match-button').css('margin-top', '-220px');
+      $("#btn-custom-files").css('visibility', 'hidden')
+    } else {
+      $('#game-chat-container').css('height', 'calc(100% - 270px)')
+      $('#game-chat-container').css('margin-top', '0')
+      $('#leave-match-button').css('margin-top','6px');
+      $("#btn-custom-files").css('visibility', 'visible')
     }
   }
   else {
-    $("#match-players").empty();
-    $('#ready-checkbox').prop('checked', false);
-    $("#local-player").css('visibility', 'hidden');
-    $('#match-settings').css('visibility','hidden');
-    $('#leave-match-button').css('visibility','hidden');
+    $("#match-players").empty()
+    $('#ready-checkbox').prop('checked', false)
+    $("#local-player").css('visibility', 'hidden')
+    $('#match-settings').css('visibility','hidden')
+    $('#leave-match-button').css('visibility','hidden')
     $('#ready-checkbox').css('visibility','hidden')
     $('#launcher-lock-panel').css('visibility', 'hidden')
-    $("#game-chat-container").css('visibility', 'hidden');
+    $("#game-chat-container").css('visibility', 'hidden')
+    $("#btn-custom-files").css('visibility', 'hidden')
   }
 }
 
@@ -382,3 +421,81 @@ function initMatchmaker(){
     }
   });
 };
+
+function getTagShortName(tag) {
+  var shortName = tag
+  if (process.platform == "win32") {
+    var splitName = tag.split('\\')
+    if (splitName.length > 1) {
+      shortName = splitName[splitName.length-1]
+    }
+  } else  {
+    var splitName = tag.split('/')
+    if (splitName.length > 1) {
+      shortName = splitName[splitName.length-1]
+    }
+  }
+  return shortName
+}
+
+function addCustomFiles() {
+  dialog.showOpenDialog({
+    properties: ['multiSelections'],
+    filters: [
+     { name: 'Xenomia Data Files', extensions: ['wad', 'pk3'] }
+    ]},
+    function(fileNames){
+      console.log('callback.')
+      if (fileNames === 'undefined'){
+        console.log('NO FILES SELECTED')
+      } else {
+        console.log(fileNames)
+        $.each(fileNames, function(idx, name){
+          var shortName = getTagShortName(name)
+          console.log(shortName)
+          if (!$('#extra-files-list').tagExist(shortName)) {
+            if(isHost) {
+              $('#extra-files-list').addTag(shortName, {allowDelete: true})
+            }
+            extraFiles.push(shortName)
+            if (isHost == true && matchID != null && matchID >= 0) {
+              var filter = '?ids%3D' + matchID + '&filter=GameID%3D' + matchID;
+              updateRecord({'ExtraFiles' : extraFiles.join(',')}, '/match', filter, function(response){})
+            }
+          }
+        })
+      }
+    });
+}
+
+function processExtraFilesFromString(fileString) {
+  var files = fileString.split(',')
+  if (files.length > 0) {
+    $.each(files, function(idx, file){
+      if (!$('#extra-files-list').tagExist(file)) {
+        if (!isHost) {
+          $('#extra-files-list').addTag(file, {allowDelete : false})
+        } else {
+          $('#extra-files-list').addTag(file, {allowDelete : true})
+        }
+        extraFiles.push(file)
+      }
+    });
+  }
+}
+
+function getExtraFiles() {
+
+}
+
+
+function readFile(filepath){
+    fs.readFile(filepath, 'utf-8', function (err, data) {
+          if(err){
+              alert("An error ocurred reading the file :" + err.message);
+              return;
+          }
+          // Change how to handle the file content
+          console.log("The file content is : " + data);
+    });
+}

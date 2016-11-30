@@ -203,8 +203,8 @@ function setPrefTeam(newTeam, newColor) {
 function setPlayerCount(players) {
   splitPlayers = players.split("-");
   numPlayers = splitPlayers[splitPlayers.length -1];
-  var span = document.getElementById("playerCountDisplay");
-  span.textContent = document.getElementById(players).textContent;
+  //var span = document.getElementById("playerCountDisplay");
+  //span.textContent = document.getElementById(players).textContent;
   document.getElementById("playerCountDisplay-newgame").textContent = numPlayers;
 }
 

@@ -75,6 +75,7 @@ function createGame(gamename, lobbysize)
     var newGameID = response["resource"][0].GameID;
     if (newGameID != null)
     {
+      extraFiles = [];
       resetServer()
       resetMatchTab(true, true)
       joinGameChat(gamename)

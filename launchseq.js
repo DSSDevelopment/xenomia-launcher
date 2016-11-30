@@ -433,6 +433,7 @@ function launchAsHost()
                     } else {
                       cargs.push("+map", "XENMAP01");
                     }
+                    console.log(extraFiles)
                     cargs.push('-host', playerCount);
                     cargs.push('-netmode', '0');
                     cargs.push('-extratic');
@@ -539,14 +540,15 @@ function startGame(cargs) {
   setTimeout(refreshChannels, 60000)
 
   if (process.platform == "darwin") {
-    //macexec = require("child_process").exec
     binaryName = "xenomia"
-    //var terminalTab = require('terminal-tab');
     cargs.push("-config", path.resolve(__dirname + '/../game/xenomia.ini'))
 
-    //terminalTab.open(path.resolve(__dirname + '/../xenomia.app/Contents/MacOS/') + "&& ./gloome -host 2" + cargs)
-    //const xenomia = spawn("osascript",  ["-e 'tell application \"Terminal\" to do script \"cd" + path.resolve(__dirname + '/../xenomia.app/Contents/MacOS/') + "&& ./gloome -host 2" + cargs + "\"'"])
-    //const xenomia = spawn('#!/bin/sh osascript <<END tell application "Terminal" do script .' + path.resolve(__dirname + '/../' + binaryName  + ";$1;exit end tell END"), cargs)
+    if (extraFiles.length > 0) {
+      $.each(extraFiles, function(idx, fileName){
+        cargs.push('-file', fileName)
+      });
+    }
+
     const xenomia = spawn(path.resolve(__dirname + '/../game/' + binaryName), cargs)
     xenomia.stdout.on('data', (data) => {
       console.log('stdout: ' + data);
@@ -566,6 +568,13 @@ function startGame(cargs) {
   }
   if (process.platform == "win32") {
     var binaryName = "xenomia.exe"
+
+    if (extraFiles.length > 0) {
+      $.each(extraFiles, function(idx, fileName){
+        cargs.push('-file', fileName)
+      });
+    }
+
     const xenomia = spawn(path.resolve(__dirname + '/../../../' + binaryName), cargs)
     xenomia.stdout.on('data', (data) => {
       console.log('stdout: $data');
